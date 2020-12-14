@@ -5,7 +5,7 @@ export class VideoRoutes {
 
     private video: VideoController = new VideoController();
 
-    public route(app: Application) {
+    route(app: Application) {
 
         app.post('/video/get', (req: Request, res: Response) => {
             this.video.get(req, res);

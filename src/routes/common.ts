@@ -1,7 +1,7 @@
 import { Application, Request, Response } from 'express';
 
 export class CommonRoutes {
-    public route(app: Application) {
+    route(app: Application) {
         app.get('/', (req: Request, res: Response) => {
             res.status(200).send({
                 success: true,
