@@ -24,13 +24,18 @@ export class VideoController {
     }
 
     async download(req: Request, res: Response) {
-        const url = req.body.url;
+        const url     = req.body.url;
+        const website = req.body.website;
         
-        try {
-            const data = await this.videoService.downloadFacebookVideo(url);
-            successResponse('Downloading a video successful', data, res);
-        } catch (err) {
-            failureResponse('Failed in downloading a video', err, res);
+        if (website === 'facebook') {
+            try {
+                const data = await this.videoService.downloadFacebookVideo(url);
+                successResponse('Downloading a video successful', data, res);
+            } catch (err) {
+                failureResponse('Failed in downloading a video', err, res);
+            }
+        } else {
+            failureResponse('Unsupported website', null, res);
         }
     }
 

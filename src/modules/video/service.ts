@@ -48,12 +48,15 @@ export default class VideoService {
             });
         }
 
+        browser.close();
+
         return data;
     }
 
     async downloadFacebookVideo(url: string) {
         const data = await fb.getInfo(url);
-        return data.download.hd;
+        console.log('downloadFacebookVideo:', data);
+        return data.download.hd || data.download.sd;
     }
 
 }
