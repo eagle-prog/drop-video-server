@@ -146,4 +146,12 @@ export default class VideoService {
         return $("meta[property='og:video']").attr("content");
     }
 
+    async downloadVimeoVideo(url: string) {
+        return url;
+    }
+
+    async downloadPinterestVideo(url: string) {
+        return url;
+    }
+
 }

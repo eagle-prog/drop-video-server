@@ -15,5 +15,9 @@ export class VideoRoutes {
             this.video.download(req, res);
         });
 
+        app.get('/video/download', (req: Request, res: Response) => {
+            this.video.pipe(req, res);
+        });
+
     }
 }
