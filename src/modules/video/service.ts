@@ -67,6 +67,7 @@ export default class VideoService {
 
     async downloadFacebookVideo(url: string) {
         const data = await fb.getInfo(url);
+        console.log('downloadFacebookVideo:', data);
         return data.download.hd || data.download.sd;
     }
 
@@ -162,7 +163,8 @@ export default class VideoService {
     }
 
     async downloadPinterestVideo(url: string) {
-        return url;
+        const response = await axios.get(`https://pinterest-video-api.herokuapp.com/${url}`);
+        return response.data;
     }
 
 }
