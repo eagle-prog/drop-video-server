@@ -16,6 +16,7 @@ export class VideoController {
                 const data = await this.videoService.getFacebookVideos(query);
                 successResponse('Getting a video successful', data, res);
             } catch (err) {
+                console.log(err);
                 failureResponse('Failed in getting a video', err, res);
             }
         } else if (website === 'instagram') {
