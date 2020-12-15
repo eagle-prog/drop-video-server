@@ -18,6 +18,14 @@ export class VideoController {
             } catch (err) {
                 failureResponse('Failed in getting a video', err, res);
             }
+        } else if (website === 'instagram') {
+            try {
+                const data = await this.videoService.getInstagramVideos(query);
+                successResponse('Getting a video successful', data, res);
+            } catch (err) {
+                console.log(err);
+                failureResponse('Failed in getting a video', err, res);
+            }
         } else {
             failureResponse('Unsupported website', null, res);
         }
@@ -30,6 +38,13 @@ export class VideoController {
         if (website === 'facebook') {
             try {
                 const data = await this.videoService.downloadFacebookVideo(url);
+                successResponse('Downloading a video successful', data, res);
+            } catch (err) {
+                failureResponse('Failed in downloading a video', err, res);
+            }
+        } else if (website === 'instagram') {
+            try {
+                const data = await this.videoService.downloadInstagramVideo(url);
                 successResponse('Downloading a video successful', data, res);
             } catch (err) {
                 failureResponse('Failed in downloading a video', err, res);

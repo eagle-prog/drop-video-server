@@ -3,7 +3,7 @@
        "module": "commonjs",
        "moduleResolution": "node",
        "pretty": true,
-       "target": "es6",
+       "target": "ES2017",
        "outDir": "./dist",
        "baseUrl": "./src"
     },
