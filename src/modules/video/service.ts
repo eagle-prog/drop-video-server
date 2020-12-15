@@ -147,7 +147,18 @@ export default class VideoService {
     }
 
     async downloadVimeoVideo(url: string) {
-        return url;
+        const browser = await puppeteer.launch(this.option);
+        const page = await browser.newPage();
+        await page.goto(url);
+        await page.waitForSelector('.player.js-player');
+        
+        const configUrl = await page.evaluate('document.querySelector(".player.js-player").getAttribute("data-config-url")') as string;
+        const response = await axios.get(configUrl);
+        const config = response.data;
+        
+        browser.close();
+        
+        return config.request.files.progressive[1].url;
     }
 
     async downloadPinterestVideo(url: string) {

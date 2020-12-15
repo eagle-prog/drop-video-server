@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { successResponse, failureResponse } from '../modules/common/service';
 import VideoService from '../modules/video/service';
-import { Video } from '../modules/video/model';
 import ytdl = require('ytdl-core');
 
 export class VideoController {
@@ -41,6 +40,7 @@ export class VideoController {
                 const data = await this.videoService.downloadVimeoVideo(url);
                 successResponse('Downloading a video successful', data, res);
             } catch (err) {
+                console.log(err);
                 failureResponse('Failed in downloading a video', err, res);
             }
         } else if (website === 'pinterest') {
@@ -48,6 +48,7 @@ export class VideoController {
                 const data = await this.videoService.downloadPinterestVideo(url);
                 successResponse('Downloading a video successful', data, res);
             } catch (err) {
+                console.log(err);
                 failureResponse('Failed in downloading a video', err, res);
             }
         } else if (website === 'facebook') {
@@ -55,6 +56,7 @@ export class VideoController {
                 const data = await this.videoService.downloadFacebookVideo(url);
                 successResponse('Downloading a video successful', data, res);
             } catch (err) {
+                console.log(err);
                 failureResponse('Failed in downloading a video', err, res);
             }
         } else if (website === 'instagram') {
@@ -62,7 +64,8 @@ export class VideoController {
                 const data = await this.videoService.downloadInstagramVideo(url);
                 successResponse('Downloading a video successful', data, res);
             } catch (err) {
-                
+                console.log(err);
+                failureResponse('Failed in downloading a video', err, res);
             }
         } else {
             failureResponse('Unsupported website', null, res);
@@ -72,12 +75,12 @@ export class VideoController {
     async pipe(req: Request, res: Response) {
         const url     = req.query.url as string;
         const website = req.query.website;
-
+        
         if (website === 'youtube') {
             if(!ytdl.validateURL(url)) {
                 return res.sendStatus(400);
             }
-            
+
             const info = await ytdl.getBasicInfo(url);
             const title = info.player_response.videoDetails.title.replace(/[^\x00-\x7F]/g, "");
     
