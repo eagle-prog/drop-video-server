@@ -118,18 +118,24 @@ export default class VideoService {
                 const thumbnail = imgEl.getAttribute('src');
                 videos.push({
                     id,
-                    title,
+                    title: title.length > 170 ? 
+                        `${title.substr(0, 170)}...` : title,
                     thumbnail,
                     url: `https://www.instagram.com${id}`
                 });
             }
             
             videos = videos.filter((item, pos) => {
-                return videos.indexOf(item) === pos;
+                const s = JSON.stringify(item);
+                return pos === videos.findIndex(obj => {
+                    return JSON.stringify(obj) === s;
+                });
             });
             
             return videos;
         });
+
+        browser.close();
         
         return videos;
     }
