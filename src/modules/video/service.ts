@@ -14,9 +14,10 @@ export default class VideoService {
             '--window-position=0,0',
             '--ignore-certifcate-errors',
             '--ignore-certifcate-errors-spki-list',
-            '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36"'
+            '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36"',
+            '--start-maximized',
         ],
-        headless: false,
+        headless: true,
     };
 
     async getFacebookVideos(query: string): Promise<Video[]> {
@@ -76,6 +77,8 @@ export default class VideoService {
         const browser = await puppeteer.launch(this.option);
         const page = await browser.newPage();
         
+        await page.setViewport({width: 1366, height: 768});
+        await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36');
         await page.goto('https://www.instagram.com/');
         await page.waitForSelector('input[name=username]');
         await page.type('input[name=username]', 'eagle19243@gmail.com');
