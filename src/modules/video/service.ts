@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer-extra';
 import axios from 'axios';
+import * as cheerio from 'cheerio';
 import { Video } from './model';
 import fb = require('fb-video-downloader');
 import StealthPlugin = require('puppeteer-extra-plugin-stealth');
@@ -22,14 +23,18 @@ export default class VideoService {
         ],
         headless: true,
     };
+    private fbUser = 'eagle19243@gmail.com';
+    private fbPass = '#Eagle19243';
+    private inUser = 'eagle19243@gmail.com';
+    private inPass = '#Eagleinstagram19243';
 
     async getFacebookVideos(query: string): Promise<Video[]> {
         const browser = await puppeteer.launch(this.option);
         const page = await browser.newPage();
         
         await page.goto('https://www.facebook.com/');
-        await page.type('input[name=email]', 'eagle19243@gmail.com');
-        await page.type('input[name=pass]', '#Eagle19243');
+        await page.type('input[name=email]', this.fbUser);
+        await page.type('input[name=pass]', this.fbPass);
         await page.click('button[name=login]');
         await page.waitForNavigation({waitUntil: 'domcontentloaded'});
         await page.goto(`https://www.facebook.com/search/videos?q=${query}`);
@@ -83,7 +88,7 @@ export default class VideoService {
         await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36');
         await page.goto('https://www.instagram.com/');
         await page.waitForSelector('input[name=username]');
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await page.waitForTimeout(2000);
         await page.evaluate(() => {
             const result = document.evaluate("//button[text()='Accept']", document, null, XPathResult.ANY_TYPE, null);
             const btnAccept:any = result.iterateNext();
@@ -92,8 +97,8 @@ export default class VideoService {
                 btnAccept.click();
             }
         });
-        await page.type('input[name=username]', 'eagle19243@gmail.com');
-        await page.type('input[name=password]', '#Eagleinstagram19243');
+        await page.type('input[name=username]', this.inUser);
+        await page.type('input[name=password]', this.inPass);
         await page.click('button[type=submit]');
         await page.waitForNavigation({waitUntil: 'domcontentloaded'});
         await page.waitForSelector('input[placeholder="Search"][autocapitalize="none"]');
@@ -156,21 +161,9 @@ export default class VideoService {
     }
 
     async downloadInstagramVideo(url: string) {
-        const browser = await puppeteer.launch(this.option);
-        const page = await browser.newPage();
-        
-        await page.setViewport({width: 1366, height: 768});
-        await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36');
-        await page.goto(url);
-        await page.waitForTimeout(2000);
-        await page.goto(url);
-        // const content = await page.evaluate(() => document.querySelector('*').outerHTML);
-        // console.log('downloadInstagramVideo:', content);
-        await page.waitForSelector("meta[property='og:video']");
-        const data = await page.evaluate(() => {
-            return document.querySelector("meta[property='og:video']").getAttribute("content");
-        });
-        browser.close();
+        const html = await axios.get(url);
+        const $ = cheerio.load(html.data);
+        const data = $("meta[property='og:video']").attr("content");
         return data;
     }
 
