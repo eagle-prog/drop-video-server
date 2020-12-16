@@ -1,8 +1,10 @@
-import * as puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-extra';
 import axios from 'axios';
-import * as cheerio from 'cheerio';
 import { Video } from './model';
 import fb = require('fb-video-downloader');
+import StealthPlugin = require('puppeteer-extra-plugin-stealth');
+
+puppeteer.use(StealthPlugin());
 
 export default class VideoService {
     private option:any = {
