@@ -74,7 +74,6 @@ export default class VideoService {
     }
 
     async getInstagramVideos(query: string): Promise<Video[]> {
-        const data: Video[] = [];
         const browser = await puppeteer.launch(this.option);
         const page = await browser.newPage();
         
@@ -82,6 +81,15 @@ export default class VideoService {
         await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36');
         await page.goto('https://www.instagram.com/');
         await page.waitForSelector('input[name=username]');
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        await page.evaluate(() => {
+            const result = document.evaluate("//button[text()='Accept']", document, null, XPathResult.ANY_TYPE, null);
+            const btnAccept:any = result.iterateNext();
+
+            if (btnAccept) {
+                btnAccept.click();
+            }
+        });
         await page.type('input[name=username]', 'eagle19243@gmail.com');
         await page.type('input[name=password]', '#Eagleinstagram19243');
         await page.click('button[type=submit]');
