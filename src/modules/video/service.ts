@@ -161,10 +161,10 @@ export default class VideoService {
         
         await page.setViewport({width: 1366, height: 768});
         await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36');
-        await page.goto(url, { waitUntil: 'networkidle0' });
-        const content = await page.evaluate(() => document.querySelector('*').outerHTML);
-        console.log('downloadInstagramVideo:', content);
-        // await page.waitForSelector("meta[property='og:video']");
+        await page.goto(url);
+        // const content = await page.evaluate(() => document.querySelector('*').outerHTML);
+        // console.log('downloadInstagramVideo:', content);
+        await page.waitForSelector("meta[property='og:video']");
         const data = await page.evaluate(() => {
             return document.querySelector("meta[property='og:video']").getAttribute("content");
         });
