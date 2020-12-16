@@ -63,6 +63,7 @@ export class VideoController {
         } else if (website === 'instagram') {
             try {
                 const data = await this.videoService.downloadInstagramVideo(url);
+                console.log('download instagram:', data);
                 successResponse('Downloading a video successful', data, res);
             } catch (err) {
                 console.log(err);
