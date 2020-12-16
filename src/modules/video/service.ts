@@ -154,11 +154,18 @@ export default class VideoService {
     }
 
     async downloadInstagramVideo(url: string) {
-        console.log('downloadInstagramVideo:', url);
-        const html = await axios.get(url);
-        const $ = cheerio.load(html.data);
-        console.log('downloadInstagramVideo:', $("meta[property='og:video']"));
-        return $("meta[property='og:video']").attr("content");
+        const browser = await puppeteer.launch(this.option);
+        const page = await browser.newPage();
+        
+        await page.setViewport({width: 1366, height: 768});
+        await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36');
+        await page.goto(url);
+        await page.waitForSelector("meta[property='og:video']");
+        const data = await page.evaluate(() => {
+            return document.querySelector("meta[property='og:video']").getAttribute("content");
+        });
+        browser.close();
+        return data;
     }
 
     async downloadVimeoVideo(url: string) {
