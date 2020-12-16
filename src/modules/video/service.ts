@@ -154,9 +154,10 @@ export default class VideoService {
     }
 
     async downloadInstagramVideo(url: string) {
+        console.log('downloadInstagramVideo:', url);
         const html = await axios.get(url);
         const $ = cheerio.load(html.data);
-        console.log('downloadInstagramVideo', $("meta[property='og:video']"));
+        console.log('downloadInstagramVideo:', $("meta[property='og:video']"));
         return $("meta[property='og:video']").attr("content");
     }
 
