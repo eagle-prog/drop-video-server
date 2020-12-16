@@ -79,7 +79,7 @@ export default class VideoService {
         
         await page.setViewport({width: 1366, height: 768});
         await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36');
-        await page.goto('https://www.instagram.com/accounts/login/');
+        await page.goto('https://www.instagram.com/');
         await page.waitForSelector('input[name=username]');
         await new Promise(resolve => setTimeout(resolve, 2000));
         await page.evaluate(() => {
