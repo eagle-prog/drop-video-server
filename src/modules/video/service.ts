@@ -21,7 +21,7 @@ export default class VideoService {
         args: [
             '--no-sandbox',
         ],
-        headless: true,
+        headless: false,
     };
     private fbUser = 'eagle19243@gmail.com';
     private fbPass = '#Eagle19243';
@@ -123,10 +123,12 @@ export default class VideoService {
         await page.waitForNavigation({waitUntil: 'domcontentloaded'});
         await page.waitForSelector('input[placeholder="Search"][autocapitalize="none"]');
         await page.type('input[placeholder="Search"][autocapitalize="none"]', query);
-        await page.waitForNavigation({waitUntil: 'domcontentloaded'});
+        const content = await page.evaluate(() => document.querySelector('*').outerHTML);
+        console.log('content:', content);
         await page.waitForSelector('a[href^="/explore/tags/"]');
-        console.log('waitfor tag');
+        console.log('waitForSelector');
         await page.click('a[href^="/explore/tags/"]');
+        console.log('click');
         await page.waitForSelector('article div[style^="flex-direction"] a[href^="/p/"][href$="/"]');
         
         const videos = await page.evaluate(async () => {
