@@ -128,11 +128,11 @@ export default class VideoService {
         await page.waitForSelector('article a[href^="/p/"][href$="/"]');
         
         const videos = await page.evaluate(async () => {
-            const distance = 600;
-            const delay    = 500;
+            const distance = 1000;
+            const delay    = 200;
             const videos   = [];
             
-            while (videos.length < 50 || 
+            while (videos.length < 30 || 
                 document.scrollingElement.scrollTop + window.innerHeight < document.scrollingElement.scrollHeight) 
             {
                 const els = document.querySelectorAll('article a[href^="/p/"][href$="/"]');
