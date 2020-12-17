@@ -30,7 +30,10 @@ export default class VideoService {
 
     async getFacebookVideos(query: string): Promise<Video[]> {
         const browser = await puppeteer.launch(this.option);
-        const page = await browser.newPage();
+        const context = browser.defaultBrowserContext();
+        context.overridePermissions('https://www.facebook.com', 
+            ['geolocation', 'notifications']);
+        const page    = await browser.newPage();
         
         await page.goto('https://www.facebook.com/');
         await page.type('input[name=email]', this.fbUser);
@@ -39,39 +42,56 @@ export default class VideoService {
         await page.waitForNavigation({waitUntil: 'domcontentloaded'});
         await page.goto(`https://www.facebook.com/search/videos?q=${query}`);
         await page.waitForSelector('div[role=article] a');
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        await page.waitForTimeout(3000);
 
-        const linkEls:any  = await page.$$('div[role=article] a');
-        const data:Video[] = [];
-        
-        for (const linkEl of linkEls) {
-            const link      = await page.evaluate(el => el.getAttribute('href'), linkEl);
+        const videos = await page.evaluate(async () => {
+            const distance  = 600;
+            const delay     = 500;
             const re:RegExp = /\/watch\/\?ref=search&v=(\d+)/g;
-            const match     = re.exec(link);
-            
-            if (match === null) {
-                continue;
+            const videos    = [];
+
+            while (document.scrollingElement.scrollTop + window.innerHeight < document.scrollingElement.scrollHeight) 
+            {
+                const els = document.querySelectorAll('div[role=article] a');
+                for (const el of els) {
+                    const link  = el.getAttribute('href');
+                    const match = re.exec(link);
+
+                    if (match === null) {
+                        continue;
+                    }
+
+                    const id        = match[1];
+                    const thumbnail = el.querySelector('img').getAttribute('src');
+                    const title     = el.querySelector('div.linoseic h2').textContent;
+                    const notExist  = videos.findIndex(video => {
+                        return video.id === id;
+                    }) === -1;
+
+                    if (notExist) {
+                        videos.push({
+                            id, 
+                            title, 
+                            thumbnail, 
+                            url: `https://www.facebook.com${link}`
+                        });
+                    }
+                }
+
+                if (videos.length >= 50) {
+                    break;
+                }
+
+                document.scrollingElement.scrollBy(0, distance);
+                await new Promise(resolve => setTimeout(resolve, delay));
             }
-            
-            const id        = match[1];
-            const thumbnail = await page.evaluate(e => {
-                return e.querySelector('img').getAttribute('src');
-            }, linkEl);
-            const title     = await page.evaluate(e => {
-                return e.querySelector('div.linoseic h2').textContent;
-            }, linkEl);
-            
-            data.push({
-                id, 
-                title, 
-                thumbnail, 
-                url: `https://www.facebook.com${link}`
-            });
-        }
+
+            return videos;
+        });
 
         browser.close();
 
-        return data;
+        return videos;
     }
 
     async downloadFacebookVideo(url: string) {
@@ -111,46 +131,41 @@ export default class VideoService {
         const videos = await page.evaluate(async () => {
             const distance = 600;
             const delay    = 500;
-            let videos     = [];
-            let linkEls    = [];
-            let stopScroll = false;
-
-            setTimeout(() => {
-                stopScroll = true;
-            }, 10000);
+            const videos   = [];
             
-            while (!stopScroll) {
+            while (videos.length < 50 ||
+                document.scrollingElement.scrollTop + window.innerHeight < document.scrollingElement.scrollHeight) 
+            {
                 const els = document.querySelectorAll('article div[style^="flex-direction"] a[href^="/p/"][href$="/"]');
-                linkEls = linkEls.concat(Array.from(els));
+                for (const el of els) {
+                    const spanEl = el.querySelector('span[aria-label="Video"]');
+
+                    if (!spanEl) {
+                        continue;
+                    }
+
+                    const link      = el.getAttribute('href');
+                    const imgEl     = el.querySelector('img');
+                    const title     = imgEl.getAttribute('alt');
+                    const thumbnail = imgEl.getAttribute('src');
+                    const notExist  = videos.findIndex(video => {
+                        return video.id === link;
+                    }) === -1;
+
+                    if (notExist) {
+                        videos.push({
+                            id: link,
+                            title: title.length > 170 ? 
+                                `${title.substr(0, 170)}...` : title,
+                            thumbnail,
+                            url: `https://www.instagram.com${link}`
+                        });
+                    }
+                }
+
                 document.scrollingElement.scrollBy(0, distance);
                 await new Promise(resolve => setTimeout(resolve, delay));
             }
-            
-            for (const linkEl of linkEls) {
-                const spanEl = linkEl.querySelector('span[aria-label="Video"]');
-                if (!spanEl) {
-                    continue;
-                }
-
-                const id = linkEl.getAttribute('href');
-                const imgEl = linkEl.querySelector('img');
-                const title = imgEl.getAttribute('alt');
-                const thumbnail = imgEl.getAttribute('src');
-                videos.push({
-                    id,
-                    title: title.length > 170 ? 
-                        `${title.substr(0, 170)}...` : title,
-                    thumbnail,
-                    url: `https://www.instagram.com${id}`
-                });
-            }
-            
-            videos = videos.filter((item, pos) => {
-                const s = JSON.stringify(item);
-                return pos === videos.findIndex(obj => {
-                    return JSON.stringify(obj) === s;
-                });
-            });
             
             return videos;
         });
