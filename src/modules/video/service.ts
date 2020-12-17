@@ -117,12 +117,15 @@ export default class VideoService {
                 btnAccept.click();
             }
         });
+        console.log('evaluate');
         await page.type('input[name=username]', this.inUser);
         await page.type('input[name=password]', this.inPass);
         await page.click('button[type=submit]');
+        console.log('submit');
         await page.waitForNavigation({waitUntil: 'domcontentloaded'});
         await page.waitForSelector('input[placeholder="Search"][autocapitalize="none"]');
         await page.type('input[placeholder="Search"][autocapitalize="none"]', query);
+        console.log('search');
         await page.waitForNavigation({waitUntil: 'domcontentloaded'});
         await page.waitForSelector('a[href^="/explore/tags/"]');
         await page.click('a[href^="/explore/tags/"]');
