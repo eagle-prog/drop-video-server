@@ -125,11 +125,10 @@ export default class VideoService {
         await page.type('input[placeholder="Search"][autocapitalize="none"]', query);
         await page.waitForSelector('a[href^="/explore/tags/"]');
         await page.click('a[href^="/explore/tags/"]');
-        console.log('click');
         await page.reload({ waitUntil: ["networkidle0", "domcontentloaded"] });
-        const content = await page.evaluate(() => document.querySelector('*').outerHTML);
-        console.log('content:', content);
-        await page.waitForSelector('article div[style^="flex-direction"] a[href^="/p/"][href$="/"]');
+        // const content = await page.evaluate(() => document.querySelector('*').outerHTML);
+        // console.log('content:', content);
+        await page.waitForSelector('article a[href^="/p/"][href$="/"]');
 
         const videos = await page.evaluate(async () => {
             const distance = 600;
@@ -139,7 +138,7 @@ export default class VideoService {
             while (videos.length < 50 ||
                 document.scrollingElement.scrollTop + window.innerHeight < document.scrollingElement.scrollHeight) 
             {
-                const els = document.querySelectorAll('article div[style^="flex-direction"] a[href^="/p/"][href$="/"]');
+                const els = document.querySelectorAll('article a[href^="/p/"][href$="/"]');
                 for (const el of els) {
                     const spanEl = el.querySelector('span[aria-label="Video"]');
 
