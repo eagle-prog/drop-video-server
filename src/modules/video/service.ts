@@ -125,9 +125,6 @@ export default class VideoService {
         await page.type('input[placeholder="Search"][autocapitalize="none"]', query);
         await page.waitForSelector('a[href^="/explore/tags/"]');
         await page.click('a[href^="/explore/tags/"]');
-        await page.reload();
-        const content = await page.evaluate(() => document.querySelector('*').outerHTML);
-        console.log('content:', content);
         await page.waitForSelector('article a[href^="/p/"][href$="/"]');
         console.log('waitForSelector');
         const videos = await page.evaluate(async () => {
