@@ -125,19 +125,17 @@ export default class VideoService {
         await page.type('input[placeholder="Search"][autocapitalize="none"]', query);
         await page.waitForSelector('a[href^="/explore/tags/"]');
         await page.click('a[href^="/explore/tags/"]');
-        console.log('click');
         await page.reload();
         const content = await page.evaluate(() => document.querySelector('*').outerHTML);
         console.log('content:', content);
         await page.waitForSelector('article a[href^="/p/"][href$="/"]');
-
+        console.log('waitForSelector');
         const videos = await page.evaluate(async () => {
             const distance = 600;
             const delay    = 500;
             const videos   = [];
             
-            while (videos.length < 50 ||
-                document.scrollingElement.scrollTop + window.innerHeight < document.scrollingElement.scrollHeight) 
+            while (document.scrollingElement.scrollTop + window.innerHeight < document.scrollingElement.scrollHeight) 
             {
                 const els = document.querySelectorAll('article a[href^="/p/"][href$="/"]');
                 for (const el of els) {
@@ -166,13 +164,17 @@ export default class VideoService {
                     }
                 }
 
+                if (videos.length >= 50) {
+                    break;
+                }
+
                 document.scrollingElement.scrollBy(0, distance);
                 await new Promise(resolve => setTimeout(resolve, delay));
             }
             
             return videos;
         });
-
+        console.log('videos:', videos);
         browser.close();
         
         return videos;
