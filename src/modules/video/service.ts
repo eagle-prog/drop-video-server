@@ -21,7 +21,7 @@ export default class VideoService {
         args: [
             '--no-sandbox',
         ],
-        headless: false,
+        headless: true,
     };
     private fbUser = 'eagle19243@gmail.com';
     private fbPass = '#Eagle19243';
