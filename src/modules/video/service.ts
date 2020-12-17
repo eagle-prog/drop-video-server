@@ -123,8 +123,7 @@ export default class VideoService {
         await page.waitForNavigation({waitUntil: 'domcontentloaded'});
         await page.waitForSelector('input[placeholder="Search"][autocapitalize="none"]');
         await page.type('input[placeholder="Search"][autocapitalize="none"]', query);
-        console.log('search');
-        // await page.waitForNavigation({waitUntil: 'domcontentloaded'});
+        await page.waitForNavigation({waitUntil: 'domcontentloaded'});
         await page.waitForSelector('a[href^="/explore/tags/"]');
         console.log('waitfor tag');
         await page.click('a[href^="/explore/tags/"]');
