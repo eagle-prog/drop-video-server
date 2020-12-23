@@ -23,8 +23,8 @@ export default class VideoService {
         ],
         headless: true,
     };
-    private fbUser = 'ygoroandre@gmail.com';
-    private fbPass = '#Eagle19243';
+    private fbUser = 'eagle19243@gmail.com';
+    private fbPass = 'Vn!tbRJK6cQ2nh$';
     private inUser = 'ygoroandre@gmail.com';
     private inPass = '#Eagle19243';
 
