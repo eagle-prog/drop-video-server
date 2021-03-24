@@ -23,10 +23,6 @@ export default class VideoService {
         ],
         headless: true,
     };
-    private fbUser = 'eagle19243@gmail.com';
-    private fbPass = 'Vn!tbRJK6cQ2nh$';
-    private inUser = 'ygoroandre@gmail.com';
-    private inPass = '#Eagle19243';
 
     async getFacebookVideos(query: string): Promise<Video[]> {
         const browser = await puppeteer.launch(this.option);
